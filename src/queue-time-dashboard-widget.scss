@@ -1,0 +1,26 @@
+@import "node_modules/azure-devops-ui/Core/_platformCommon.scss";
+
+.runs-list {
+    padding: 0 10px 0 0;
+    margin: 0;
+}
+
+.bar-chart-list-item {
+    transition: opacity 170ms ease-in-out;
+    padding: 0 1px 0 1px;
+}
+
+.bar-chart-success-color {
+    background-color: rgba(85, 163, 98, 0.2);
+    border: 1px solid rgb(85, 163, 98);
+}
+
+.bar-chart-unknown-color {
+    background-color: $secondary-text;
+}
+
+.bar-chart-item {
+    display: block;
+    background-clip: content-box;
+    border-radius: 2px 2px 0 0;
+}
