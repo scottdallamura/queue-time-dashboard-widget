@@ -10,7 +10,7 @@ import { BuildDefinitionReference, BuildRestClient } from "azure-devops-extensio
 import "azure-devops-ui/Core/core.css";
 import "azure-devops-ui/Core/override.css";
 import './queue-time-dashboard-widget.scss';
-import { IWidgetConfigurationContext, ConfigurationEvent } from "./widget-sdk-stuff";
+import { IWidgetConfigurationContext, ConfigurationEvent, SaveStatus, WidgetSettings, WidgetStatus, IWidgetConfiguration, WidgetStatusType } from "./widget-sdk-stuff";
 
 export const QueueTimeDashboardWidgetConfiguration = () => {
     const [definitions, setDefinitions] = useState<BuildDefinitionReference[]>([]);
@@ -33,16 +33,13 @@ export const QueueTimeDashboardWidgetConfiguration = () => {
         setDefinitions(definitions);
     }
 
-    const onHostLoad = (widgetSettings: any, widgetConfigurationContext: any) => {
+    const onHostLoad = (widgetSettings: WidgetSettings, widgetConfigurationContext: IWidgetConfigurationContext) => {
         console.log("config widgetSettings " + JSON.stringify(widgetSettings));
         
         setConfigurationContext(widgetConfigurationContext);
 
-        // in most samples this is
-        //     return WidgetHelpers.WidgetStatusHelper.Sucess();
-        // .. but the new SDK doesn't contain that at this time, or a way to include it e.g. VSS.require()
         return Promise.resolve({
-            statusType: 0 // success
+            statusType: WidgetStatusType.Success
         });
     };
 
@@ -63,7 +60,7 @@ export const QueueTimeDashboardWidgetConfiguration = () => {
             return {
                 load: onHostLoad,
                 onSave: onHostSave
-            }
+            } as IWidgetConfiguration;
         });
 
         SDK.init({

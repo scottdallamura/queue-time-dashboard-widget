@@ -8,7 +8,7 @@ import { Build, BuildDefinition, BuildRestClient } from "azure-devops-extension-
 import "azure-devops-ui/Core/core.css";
 import "azure-devops-ui/Core/override.css";
 import './queue-time-dashboard-widget.scss';
-import { WidgetSettings, WidgetStatusType } from "./widget-sdk-stuff";
+import { IConfigurableWidget, WidgetSettings, WidgetStatusType } from "./widget-sdk-stuff";
 
 const MaxItems = 20;
 const MinHeight = 8;
@@ -64,7 +64,7 @@ export const QueueTimeDashboardWidget = () => {
             return {
                 load: loadFromSettings,
                 reload: loadFromSettings
-            }
+            } as IConfigurableWidget;
         });
 
         SDK.init({

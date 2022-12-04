@@ -39,6 +39,11 @@ export enum WidgetStatusType {
     Unconfigured = 2
 }
 
+export interface WidgetStatus {
+    state?: string;
+    statusType: WidgetStatusType;
+}
+
 export interface WidgetSettings {
     name: string;
     customSettings: CustomSettings;
@@ -48,4 +53,34 @@ export interface WidgetSettings {
 
 export class ConfigurationEvent {
     static ConfigurationChange: string = "ms.vss-dashboards-web.configurationChange";
+}
+
+export interface SaveStatus {
+    customSettings: CustomSettings;
+    isValid: boolean;
+}
+
+export interface IWidgetConfiguration {
+    load: (widgetSettings: WidgetSettings, widgetConfigurationContext: IWidgetConfigurationContext) => Promise<WidgetStatus>;
+    onSave: () => Promise<SaveStatus>;
+    onSaveComplete?: () => void;
+    listen?: <T>(event: string, eventArgs: EventArgs<T>) => void;
+}
+
+export interface Size {
+    width: number;
+    height: number;
+}
+
+export interface IWidget {
+    preload?: (widgetSettings: WidgetSettings) => Promise<WidgetStatus>;
+    load: (widgetSettings: WidgetSettings) => Promise<WidgetStatus> | WidgetStatusType;
+    onDashboardLoaded?: () => void;
+    disableWidgetForStakeholders?: (widgetSettings: WidgetSettings) => Promise<boolean>;
+    lightbox?: (widgetSettings: WidgetSettings, lightboxSize: Size) => Promise<WidgetStatus>;
+    listen?: <T>(event: string, eventArgs: EventArgs<T>) => void;
+}
+
+export interface IConfigurableWidget extends IWidget {
+    reload: (newWidgetSettings: WidgetSettings) => Promise<WidgetStatus> | WidgetStatusType;
 }
