@@ -8,40 +8,11 @@ import { Build, BuildDefinition, BuildRestClient } from "azure-devops-extension-
 import "azure-devops-ui/Core/core.css";
 import "azure-devops-ui/Core/override.css";
 import './queue-time-dashboard-widget.scss';
+import { WidgetSettings, WidgetStatusType } from "./widget-sdk-stuff";
 
 const MaxItems = 20;
 const MinHeight = 8;
 const MaxHeight = 72;
-
-// these should be from the Widget SDK, but it's not available
-interface WidgetSize {
-    columnSpan: number;
-    rowSpan: number;
-}
-
-interface LightboxOptions {
-    height: number;
-    width: number;
-    resizable: boolean;
-}
-
-interface SemanticVersion {
-    major: number;
-    minor: number;
-    patch: number;
-}
-
-interface CustomSettings {
-    data: string;
-    version?: SemanticVersion;
-}
-
-interface WidgetSettings {
-    name: string;
-    customSettings: CustomSettings;
-    size: WidgetSize;
-    lightboxOptions: LightboxOptions;
-}
 
 interface QueueTimeWidgetSettings {
     definitionId: string;
@@ -80,11 +51,12 @@ export const QueueTimeDashboardWidget = () => {
     const loadFromSettings = (widgetSettings: WidgetSettings) => {
         console.log("load widgetSettings " + JSON.stringify(widgetSettings));
 
-        const payload = JSON.parse(widgetSettings.customSettings.data);
+        const payload = JSON.parse(widgetSettings.customSettings.data) as QueueTimeWidgetSettings;
 
         setDefinitionId(parseInt(payload.definitionId));
 
-        return 0; // success
+        // TODO: "Unconfigured" is a thing. maybe if payload.definitionId is NaN we can use that
+        return WidgetStatusType.Success;
     };
 
     useEffect(() => {

@@ -10,23 +10,7 @@ import { BuildDefinitionReference, BuildRestClient } from "azure-devops-extensio
 import "azure-devops-ui/Core/core.css";
 import "azure-devops-ui/Core/override.css";
 import './queue-time-dashboard-widget.scss';
-
-const MaxItems = 20;
-const MinHeight = 8;
-const MaxHeight = 72;
-
-// this should be imported from the widget SDK, but it's not available in the new version :(
-interface EventArgs<T> {
-    data: T;
-}
-
-export interface NotifyResult {
-    getResponse(): Promise<string>;
-}
-
-interface IWidgetConfigurationContext {
-    notify: <T>(event: string, eventArgs: EventArgs<T>) => Promise<NotifyResult>;
-}
+import { IWidgetConfigurationContext, ConfigurationEvent } from "./widget-sdk-stuff";
 
 export const QueueTimeDashboardWidgetConfiguration = () => {
     const [definitions, setDefinitions] = useState<BuildDefinitionReference[]>([]);
@@ -97,13 +81,14 @@ export const QueueTimeDashboardWidgetConfiguration = () => {
 
         if (!!configurationContext) {
             const customSettings = {
+                // TODO: pull QueueTimeWidgetSettings interface out of the widget and into a common location
                 data: JSON.stringify({
                     definitionId: item.id
                 })
             };
 
             configurationContext.notify(
-                "ms.vss-dashboards-web.configurationChange", // ConfigurationEvent.ConfigurationChange
+                ConfigurationEvent.ConfigurationChange,
                 { data: customSettings } // ConfigurationEvent.Args(customSettings)
             );
         }

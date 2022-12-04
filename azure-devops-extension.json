@@ -2,7 +2,7 @@
     "manifestVersion": 1,
     "id": "queue-time-dashboard-widget",
     "publisher": "scott-dallamura",
-    "version": "1.0.74",
+    "version": "1.0.75",
     "name": "Queue-time dashboard widget",
     "description": "Shows how long your runs are waiting in the queue",
     "public": false,
