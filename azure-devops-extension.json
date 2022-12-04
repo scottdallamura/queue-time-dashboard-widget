@@ -2,7 +2,7 @@
     "manifestVersion": 1,
     "id": "queue-time-dashboard-widget",
     "publisher": "scott-dallamura",
-    "version": "1.0.43",
+    "version": "1.0.74",
     "name": "Queue-time dashboard widget",
     "description": "Shows how long your runs are waiting in the queue",
     "public": false,
@@ -21,7 +21,8 @@
             "id": "queue-time-dashboard-widget",
             "type": "ms.vss-dashboards-web.widget",
             "targets": [
-                "ms.vss-dashboards-web.widget-catalog"
+                "ms.vss-dashboards-web.widget-catalog",
+                "scott-dallamura.queue-time-dashboard-widget.queue-time-dashboard-widget.configuration"
             ],
             "properties": {
                 "name": "Queue-time widget",
@@ -37,6 +38,16 @@
                     }
                 ],
                 "supportedScopes": ["project_team"]
+            }
+        },
+        {
+            "id": "queue-time-dashboard-widget.configuration",
+            "type": "ms.vss-dashboards-web.widget-configuration",
+            "targets": [ "ms.vss-dashboards-web.widget-configuration" ],
+            "properties": {
+                "name": "Queue-time widget Configuration",
+                "description": "Configures the queue-time dashboard widget",
+                "uri": "dist/queue-time-dashboard-widget-configuration.html"
             }
         }
     ],

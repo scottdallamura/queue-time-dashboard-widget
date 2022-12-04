@@ -3,9 +3,12 @@ const fs = require("fs");
 const CopyWebpackPlugin = require("copy-webpack-plugin");
 
 module.exports = {
-    entry: "./src/queue-time-dashboard-widget.tsx",
+    entry: {
+        "queue-time-dashboard-widget": "./src/queue-time-dashboard-widget.tsx",
+        "queue-time-dashboard-widget-configuration": "./src/queue-time-dashboard-widget-configuration.tsx"
+    },
     output: {
-        filename: "queue-time-dashboard-widget.js"
+        filename: "[name].js"
     },
     optimization: {
         minimize: false

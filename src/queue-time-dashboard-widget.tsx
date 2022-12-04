@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import * as ReactDOM from "react-dom";
 import * as SDK from "azure-devops-extension-sdk";
 import { CommonServiceIds, getClient, IProjectPageService } from "azure-devops-extension-api";
-import { Build, BuildRestClient } from "azure-devops-extension-api/Build";
+import { Build, BuildDefinition, BuildRestClient } from "azure-devops-extension-api/Build";
 
 import "azure-devops-ui/Core/core.css";
 import "azure-devops-ui/Core/override.css";
@@ -13,8 +13,44 @@ const MaxItems = 20;
 const MinHeight = 8;
 const MaxHeight = 72;
 
+// these should be from the Widget SDK, but it's not available
+interface WidgetSize {
+    columnSpan: number;
+    rowSpan: number;
+}
+
+interface LightboxOptions {
+    height: number;
+    width: number;
+    resizable: boolean;
+}
+
+interface SemanticVersion {
+    major: number;
+    minor: number;
+    patch: number;
+}
+
+interface CustomSettings {
+    data: string;
+    version?: SemanticVersion;
+}
+
+interface WidgetSettings {
+    name: string;
+    customSettings: CustomSettings;
+    size: WidgetSize;
+    lightboxOptions: LightboxOptions;
+}
+
+interface QueueTimeWidgetSettings {
+    definitionId: string;
+}
+
 export const QueueTimeDashboardWidget = () => {
     const [runs, setRuns] = useState<Build[]>([]);
+    const [definition, setDefinition] = useState<BuildDefinition>();
+    const [definitionId, setDefinitionId] = useState(0);
 
     const loadBuilds = async () => {
         const projectService = await SDK.getService<IProjectPageService>(CommonServiceIds.ProjectPageService);
@@ -24,21 +60,38 @@ export const QueueTimeDashboardWidget = () => {
         }
 
         const buildClient = getClient(BuildRestClient);
-        const builds = await buildClient.getBuilds(project.id, [139], undefined, undefined, undefined, undefined, undefined, undefined,
-            undefined, undefined, undefined, undefined, MaxItems);
+        
+        if (definitionId > 0) {
+            buildClient.getDefinition(project.id, definitionId)
+                .then((definition: BuildDefinition) => {
+                    setDefinition(definition);
+                });
 
-        // make sure there are MaxItem entries to make looping simpler later
-        setRuns(new Array(MaxItems - builds.length).fill(undefined).concat(builds));
+
+            buildClient.getBuilds(project.id, [definitionId], undefined, undefined, undefined, undefined, undefined, undefined,
+                undefined, undefined, undefined, undefined, MaxItems)
+                .then((builds: Build[]) => {
+                    // make sure there are MaxItem entries to make looping simpler later
+                    setRuns(new Array(MaxItems - builds.length).fill(undefined).concat(builds));
+                });
+        }
     }
+
+    const loadFromSettings = (widgetSettings: WidgetSettings) => {
+        console.log("load widgetSettings " + JSON.stringify(widgetSettings));
+
+        const payload = JSON.parse(widgetSettings.customSettings.data);
+
+        setDefinitionId(parseInt(payload.definitionId));
+
+        return 0; // success
+    };
 
     useEffect(() => {
         SDK.register("queue-time-dashboard-widget", () => {
             return {
-                load: function (widgetSettings: any) {
-                    console.log("load widgetSettings " + JSON.stringify(widgetSettings));
-
-                    return 0; // success
-                }
+                load: loadFromSettings,
+                reload: loadFromSettings
             }
         });
 
@@ -47,9 +100,11 @@ export const QueueTimeDashboardWidget = () => {
         });
         
         SDK.ready();
-
-        loadBuilds();
     }, []);
+
+    useEffect(() => {
+        loadBuilds();
+    }, [definitionId]);
 
     let longestQueueTime: number = 0;
     runs.forEach((run) => {
@@ -62,9 +117,13 @@ export const QueueTimeDashboardWidget = () => {
         }
     });
 
+    if (isNaN(definitionId) || definitionId <= 0) {
+        return <div>configure me</div>
+    }
+
     return (
         <div className="queue-time-dashboard-widget">
-            <h2 className="visual-title text-ellipsis definition-header">definition name here</h2>
+            <h2 className="visual-title text-ellipsis definition-header">{definition?.name}</h2>
             <div className="bar-chart">
                 <ul className="runs-list flex flex-row">
                     {runs.map((run: Build, index: number) => {
