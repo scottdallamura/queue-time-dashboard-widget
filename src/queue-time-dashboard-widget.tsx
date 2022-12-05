@@ -4,19 +4,16 @@ import * as ReactDOM from "react-dom";
 import * as SDK from "azure-devops-extension-sdk";
 import { CommonServiceIds, getClient, IProjectPageService } from "azure-devops-extension-api";
 import { Build, BuildDefinition, BuildRestClient } from "azure-devops-extension-api/Build";
+import { IConfigurableWidget, WidgetSettings, WidgetStatusType } from "./widget-sdk-stuff";
+import { QueueTimeWidgetSettings } from "./queue-time-dashboard-widget-settings";
 
 import "azure-devops-ui/Core/core.css";
 import "azure-devops-ui/Core/override.css";
 import './queue-time-dashboard-widget.scss';
-import { IConfigurableWidget, WidgetSettings, WidgetStatusType } from "./widget-sdk-stuff";
 
 const MaxItems = 20;
 const MinHeight = 8;
 const MaxHeight = 72;
-
-interface QueueTimeWidgetSettings {
-    definitionId: string;
-}
 
 export const QueueTimeDashboardWidget = () => {
     const [runs, setRuns] = useState<Build[]>([]);
