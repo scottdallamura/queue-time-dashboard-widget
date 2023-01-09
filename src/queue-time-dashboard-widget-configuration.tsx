@@ -56,7 +56,10 @@ export const QueueTimeDashboardWidgetConfiguration = () => {
         console.log("config widgetSettings " + JSON.stringify(widgetSettings));
 
         const payload = JSON.parse(widgetSettings.customSettings.data) as QueueTimeWidgetSettings;
-        latestDefinitionId.current = payload.definitionId;
+        if (!!payload) {
+            latestDefinitionId.current = payload.definitionId;
+        }
+        
         setConfigurationContext(widgetConfigurationContext);
 
         loadDefinitions();
